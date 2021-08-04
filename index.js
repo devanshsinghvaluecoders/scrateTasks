@@ -3,6 +3,7 @@ var express = require("express");
 var dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 var app = express();
+require("./database/conn");
 
 app.get("/", (req, res) => {
   res.send("hello to devansah");
