@@ -5,11 +5,12 @@ const cors = require("cors");
 var dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 var app = express();
-
+var bcrypt = require("bcryptjs");
 var ContactSchema = require("./middleware/ContactSchema");
 var BlogsSchema = require("./middleware/Blogs");
 var PropertySchema = require("./middleware/SitesSchema");
 var EnquirySchema = require("./middleware/EnquirySchema");
+var LoginSchema = require("./middleware/UserSchema");
 require("./database/conn");
 app.use(cookieParser());
 app.use(express.json());
@@ -18,6 +19,33 @@ app.get("/", (req, res) => {
   res.send("hello to devansah");
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(422).json({ error: "fill all" });
+    }
+    const UserLogin = await LoginSchema.findOne({ email });
+    if (UserLogin) {
+      const isMatch = await bcrypt.compare(password, UserLogin.password);
+      const token = await UserLogin.generateToken();
+      res.cookie("jwtverify", token, {
+        expires: new Date(Date.now() + 25892000),
+        httpOnly: true,
+      });
+
+      if (!isMatch) {
+        res.status(400).json({ error: "invalid credential" });
+      } else {
+        res.status(200).json({ message: "login succesfull" });
+      }
+    } else {
+      res.status(400).json({ message: "user Dont exist" });
+    }
+  } catch (err) {
+    res.status(400).json({ error: err });
+  }
+});
 app.post("/GetProperty", async (req, res) => {
   const { searching, limit } = req.body;
 
