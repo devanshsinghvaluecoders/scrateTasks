@@ -99,19 +99,6 @@ app.post("/postProperty", async (req, res) => {
 });
 // Admin panel blogs
 // get request blogs
-app.get("/Blogspage", async (req, res) => {
-  try {
-    const rootUser = await BlogsSchema.aggregate([
-      { $sort: { created_at: -1 } },
-      { $limit: 4 },
-    ]);
-    // .find().sort({ created_at: -1 });
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    res.status(401).send("unautherised");
-    console.log(err);
-  }
-});
 
 //Admin panel blogs
 // post request blogs
