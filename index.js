@@ -86,9 +86,6 @@ app.post("/register", (req, res) => {
 });
 app.get("/adminMessage", async (req, res) => {
   try {
-    const val = sessionStorage.getItem("Token");
-    console.log(val);
-
     const rootUser = await ContactSchema.find().sort({ created_at: -1 });
     res.status(200).json({ rootUser });
   } catch (err) {
@@ -136,10 +133,13 @@ app.post("/adminMessageSingle", async (req, res) => {
 app.post("/AdminCheck", async (req, res) => {
   try {
     const token = req.body.Token;
+    console.log(token);
+
     const verifyToken = jwtoken.verify(token, process.env.SECRET);
     const rootUser = await LoginSchema.findOne({
       _id: verifyToken._id,
     });
+    console.log(rootUser);
 
     if (rootUser) {
       res.json({ message: "yes" });
