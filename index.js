@@ -34,9 +34,8 @@ app.post("/login", async (req, res) => {
       const token = await UserLogin.generateToken();
       res.cookie("jwtverify", token, {
         expires: new Date(Date.now() + 25892000),
-        httpOnly: false,
+        httpOnly: true,
       });
-      // res.cookie("name", "geeksforgeeks");
 
       if (!isMatch) {
         res.status(400).json({ error: "invalid credential" });
