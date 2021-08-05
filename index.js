@@ -3,6 +3,8 @@ var cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 var dotenv = require("dotenv");
+var jwtoken = require("jsonwebtoken");
+
 dotenv.config({ path: "./.env" });
 var app = express();
 var bcrypt = require("bcryptjs");
@@ -32,13 +34,14 @@ app.post("/login", async (req, res) => {
       const token = await UserLogin.generateToken();
       res.cookie("jwtverify", token, {
         expires: new Date(Date.now() + 25892000),
-        httpOnly: true,
+        httpOnly: false,
       });
+      // res.cookie("name", "geeksforgeeks");
 
       if (!isMatch) {
         res.status(400).json({ error: "invalid credential" });
       } else {
-        res.status(200).json({ message: "login succesfull" });
+        res.status(200).json({ message: "login succesfull", token });
       }
     } else {
       res.status(400).json({ message: "user Dont exist" });
@@ -83,6 +86,9 @@ app.post("/register", (req, res) => {
 });
 app.get("/adminMessage", async (req, res) => {
   try {
+    const val = sessionStorage.getItem("Token");
+    console.log(val);
+
     const rootUser = await ContactSchema.find().sort({ created_at: -1 });
     res.status(200).json({ rootUser });
   } catch (err) {
@@ -127,7 +133,23 @@ app.post("/adminMessageSingle", async (req, res) => {
     console.log(err);
   }
 });
+app.post("/AdminCheck", async (req, res) => {
+  try {
+    const token = req.body.Token;
+    const verifyToken = jwtoken.verify(token, process.env.SECRET);
+    const rootUser = await LoginSchema.findOne({
+      _id: verifyToken._id,
+    });
 
+    if (rootUser) {
+      res.json({ message: "yes" });
+    } else {
+      res.status(401).json({ error: "unautherised" });
+    }
+  } catch (err) {
+    res.status(401).json({ error: "unautherised" });
+  }
+});
 //delete blog api
 app.post("/DeleteBlog", async (req, res) => {
   try {
