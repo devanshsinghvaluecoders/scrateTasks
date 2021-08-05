@@ -52,6 +52,48 @@ app.post("/GetProperty", async (req, res) => {
     res.json(err);
   }
 });
+//post property to the site
+app.post("/postProperty", async (req, res) => {
+  const {
+    name,
+    price,
+    images,
+    address,
+    Beds,
+    Baths,
+    unit,
+    sqft,
+    onWards,
+    tags,
+    pdfs,
+  } = req.body;
+  console.log(tags);
+  try {
+    if (!name || !price || !images || !address || !unit) {
+      res.json({ error: "please fill all" });
+    } else {
+      const data = new PropertySchema({
+        name,
+        price,
+        unit,
+        images,
+        address,
+        Beds,
+        Baths,
+        sqft,
+        onWards,
+        tags,
+        pdfs,
+      });
+      data
+        .save()
+        .then(() => res.json({ message: "data saved sucessfully" }))
+        .catch((err) => res.json({ error: "no save" }));
+    }
+  } catch (err) {
+    res.json(err);
+  }
+});
 
 app.listen(process.env.PORT || 3080, () => {
   console.log(`connection succesfull  ${process.env.PORT}`);
