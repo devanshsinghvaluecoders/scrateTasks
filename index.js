@@ -46,6 +46,47 @@ app.post("/login", async (req, res) => {
     res.status(400).json({ error: err });
   }
 });
+app.post("/register", (req, res) => {
+  const { name, email, security, password, Cpassword } = req.body;
+  console.log(security);
+  if (!name || !email || !security || !password || !Cpassword) {
+    res.json({ error: "please fill all values" });
+  } else if (password !== Cpassword) {
+    res.json({ error: "pasword donot match" });
+  } else if (security != 5854) {
+    res.json({ error: "security donot match" });
+  } else {
+    LoginSchema.findOne({ email }).then((userExist) => {
+      if (userExist) {
+        res.json({ error: "user already exist" });
+      } else {
+        const data = new LoginSchema({
+          name,
+          email,
+
+          password,
+          Cpassword,
+        });
+        data
+          .save()
+          .then(() => {
+            res.json({ message: "success" });
+          })
+          .catch(() => {
+            console.log("no data saved");
+            res.json({ error: "success" });
+          });
+      }
+    });
+  }
+});
+
+//logout api
+// app.get("/logout", authenticate, (req, res) => {
+//   // console.log(req.cookies.jwtverify);
+//   res.clearCookie("jwtverify", { path: "/" });
+//   res.status(200).send("userlogout");
+// });
 app.post("/GetProperty", async (req, res) => {
   const { searching, limit } = req.body;
 
