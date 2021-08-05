@@ -6,6 +6,7 @@ var dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 var app = express();
 var bcrypt = require("bcryptjs");
+var authenticate = require("./middleware/authenticate");
 var ContactSchema = require("./middleware/ContactSchema");
 var BlogsSchema = require("./middleware/Blogs");
 var PropertySchema = require("./middleware/SitesSchema");
@@ -82,11 +83,11 @@ app.post("/register", (req, res) => {
 });
 
 //logout api
-// app.get("/logout", authenticate, (req, res) => {
-//   // console.log(req.cookies.jwtverify);
-//   res.clearCookie("jwtverify", { path: "/" });
-//   res.status(200).send("userlogout");
-// });
+app.get("/logout", authenticate, (req, res) => {
+  // console.log(req.cookies.jwtverify);
+  res.clearCookie("jwtverify", { path: "/" });
+  res.status(200).send("userlogout");
+});
 app.post("/GetProperty", async (req, res) => {
   const { searching, limit } = req.body;
 
