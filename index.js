@@ -127,6 +127,27 @@ app.post("/adminMessageSingle", async (req, res) => {
     console.log(err);
   }
 });
+
+//delete blog api
+app.post("/DeleteBlog", async (req, res) => {
+  try {
+    const data = await BlogsSchema.findByIdAndDelete(req.body.id);
+    res.status(200).json(data);
+  } catch (err) {
+    res.json(err);
+  }
+});
+
+//delete property
+app.post("/DeleteProperty", async (req, res) => {
+  try {
+    const data = await PropertySchema.findByIdAndDelete(req.body.id);
+    res.status(200).json(data);
+  } catch (err) {
+    res.json(err);
+  }
+});
+
 app.post("/adminPropertiesSingle", async (req, res) => {
   const _id = req.body.id;
   try {
