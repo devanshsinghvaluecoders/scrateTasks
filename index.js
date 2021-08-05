@@ -112,6 +112,15 @@ app.get("/Blogspage", async (req, res) => {
     console.log(err);
   }
 });
+app.post("/PropertiesSingle", async (req, res) => {
+  const _id = req.body.id;
+  try {
+    const rootUser = await PropertySchema.find({ _id });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
 //Admin panel blogs
 // post request blogs
 app.post("/adminBlogs", async (req, res) => {
