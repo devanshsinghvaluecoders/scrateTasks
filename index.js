@@ -5,7 +5,6 @@ const cors = require("cors");
 var dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
 var app = express();
-var authenticate = require("./middleware/authenticate");
 
 var ContactSchema = require("./middleware/ContactSchema");
 var BlogsSchema = require("./middleware/Blogs");
@@ -113,18 +112,7 @@ app.get("/Blogspage", async (req, res) => {
     console.log(err);
   }
 });
-app.get("/AdminBlogs", authenticate, async (req, res) => {
-  try {
-    const rootUser = await BlogsSchema.aggregate([
-      { $sort: { created_at: -1 } },
-    ]);
-    // .find().sort({ created_at: -1 });
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    res.status(401).send("unautherised");
-    console.log(err);
-  }
-});
+
 //Admin panel blogs
 // post request blogs
 app.post("/adminBlogs", async (req, res) => {
@@ -180,25 +168,7 @@ app.post("/allblogs", async (req, res) => {
     res.json(err);
   }
 });
-//delete blog api
-app.post("/DeleteBlog", authenticate, async (req, res) => {
-  try {
-    const data = await BlogsSchema.findByIdAndDelete(req.body.id);
-    res.status(200).json(data);
-  } catch (err) {
-    res.json(err);
-  }
-});
 
-//delete property
-app.post("/DeleteProperty", authenticate, async (req, res) => {
-  try {
-    const data = await PropertySchema.findByIdAndDelete(req.body.id);
-    res.status(200).json(data);
-  } catch (err) {
-    res.json(err);
-  }
-});
 app.get("/GetEnquiry", async (req, res) => {
   try {
     const rootUser = await EnquirySchema.find().sort({ created_at: -1 });
@@ -231,15 +201,7 @@ app.post("/PostEnquiry", async (req, res) => {
     res.json(err);
   }
 });
-app.get("/GetPropertyAdmin", authenticate, async (req, res) => {
-  try {
-    const rootUser = await PropertySchema.find().sort({ created_at: -1 });
 
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    console.log(err);
-  }
-});
 app.post("/contact", async (req, res) => {
   try {
     const { name, email, phone, message } = req.body;
@@ -260,33 +222,6 @@ app.post("/contact", async (req, res) => {
     }
   } catch (err) {
     res.json({ error: "no save" });
-  }
-});
-app.post("/adminMessageSingle", authenticate, async (req, res) => {
-  const _id = req.body.id;
-  try {
-    const rootUser = await ContactSchema.find({ _id });
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    console.log(err);
-  }
-});
-app.post("/adminPropertiesSingle", authenticate, async (req, res) => {
-  const _id = req.body.id;
-  try {
-    const rootUser = await PropertySchema.find({ _id });
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    console.log(err);
-  }
-});
-app.post("/adminBlogsingle", authenticate, async (req, res) => {
-  const _id = req.body.id;
-  try {
-    const rootUser = await BlogsSchema.find({ _id });
-    res.status(200).json({ rootUser });
-  } catch (err) {
-    console.log(err);
   }
 });
 
