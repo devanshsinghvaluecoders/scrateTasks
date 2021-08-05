@@ -81,7 +81,43 @@ app.post("/register", (req, res) => {
     });
   }
 });
+app.get("/adminMessage", authenticate, async (req, res) => {
+  try {
+    const rootUser = await ContactSchema.find().sort({ created_at: -1 });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.get("/GetPropertyAdmin", authenticate, async (req, res) => {
+  try {
+    const rootUser = await PropertySchema.find().sort({ created_at: -1 });
 
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.get("/GetEnquiry", async (req, res) => {
+  try {
+    const rootUser = await EnquirySchema.find().sort({ created_at: -1 });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.get("/AdminBlogs", authenticate, async (req, res) => {
+  try {
+    const rootUser = await BlogsSchema.aggregate([
+      { $sort: { created_at: -1 } },
+    ]);
+    // .find().sort({ created_at: -1 });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    res.status(401).send("unautherised");
+    console.log(err);
+  }
+});
 //logout api
 app.get("/logout", authenticate, (req, res) => {
   // console.log(req.cookies.jwtverify);
