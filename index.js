@@ -99,7 +99,7 @@ app.post("/postProperty", async (req, res) => {
 });
 // Admin panel blogs
 // get request blogs
-app.post("/Blogspage", async (req, res) => {
+app.get("/Blogspage", async (req, res) => {
   try {
     const rootUser = await BlogsSchema.aggregate([
       { $sort: { created_at: -1 } },
