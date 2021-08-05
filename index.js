@@ -10,7 +10,6 @@ var authenticate = require("./middleware/authenticate");
 var ContactSchema = require("./middleware/ContactSchema");
 var BlogsSchema = require("./middleware/Blogs");
 var PropertySchema = require("./middleware/SitesSchema");
-var LoginSchema = require("./middleware/UserSchema");
 var EnquirySchema = require("./middleware/EnquirySchema");
 require("./database/conn");
 app.use(cookieParser());
