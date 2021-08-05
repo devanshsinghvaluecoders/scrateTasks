@@ -118,6 +118,33 @@ app.get("/AdminBlogs", async (req, res) => {
     console.log(err);
   }
 });
+app.post("/adminMessageSingle", async (req, res) => {
+  const _id = req.body.id;
+  try {
+    const rootUser = await ContactSchema.find({ _id });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.post("/adminPropertiesSingle", async (req, res) => {
+  const _id = req.body.id;
+  try {
+    const rootUser = await PropertySchema.find({ _id });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.post("/adminBlogsingle", async (req, res) => {
+  const _id = req.body.id;
+  try {
+    const rootUser = await BlogsSchema.find({ _id });
+    res.status(200).json({ rootUser });
+  } catch (err) {
+    console.log(err);
+  }
+});
 //logout api
 app.get("/logout", authenticate, (req, res) => {
   // console.log(req.cookies.jwtverify);
