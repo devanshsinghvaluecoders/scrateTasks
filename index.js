@@ -32,10 +32,10 @@ app.post("/login", async (req, res) => {
     if (UserLogin) {
       const isMatch = await bcrypt.compare(password, UserLogin.password);
       const token = await UserLogin.generateToken();
-      res.cookie("jwtverify", token, {
-        expires: new Date(Date.now() + 25892000),
-        httpOnly: true,
-      });
+      // res.cookie("jwtverify", token, {
+      //   expires: new Date(Date.now() + 25892000),
+      //   httpOnly: true,
+      // });
 
       if (!isMatch) {
         res.status(400).json({ error: "invalid credential" });
