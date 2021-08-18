@@ -230,6 +230,195 @@ app.post("/GetProperty", async (req, res) => {
     res.json(err);
   }
 });
+app.post("/advGetProperty", async (req, res) => {
+  const { advsearching, searchsqft, searchlocation, limit } = req.body;
+  try {
+    if (
+      advsearching.length > 0 &&
+      searchsqft.length === 0 &&
+      searchlocation.length === 0
+    ) {
+      const regex = new RegExp(advsearching);
+      console.log("advsearching", advsearching);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regex, $options: "si" } },
+              { Beds: { $regex: regex, $options: "si" } },
+              { Baths: { $regex: regex, $options: "si" } },
+              { tags: { $regex: regex, $options: "si" } },
+            ],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length === 0 &&
+      searchsqft.length > 0 &&
+      searchlocation.length === 0
+    ) {
+      const regex = new RegExp(parseInt(searchsqft));
+      const sqft1 = parseInt(searchsqft);
+
+      console.log("searchsqft", regex);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $or: [{ sqft: sqft1 }],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length === 0 &&
+      searchsqft.length === 0 &&
+      searchlocation.length > 0
+    ) {
+      const regex = new RegExp(searchlocation);
+      console.log("searchlocation", searchlocation);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $or: [{ address: { $regex: regex, $options: "si" } }],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length > 0 &&
+      searchsqft.length > 0 &&
+      searchlocation.length === 0
+    ) {
+      const regex = new RegExp(advsearching);
+      const regex2 = new RegExp(searchsqft);
+      const sqft1 = parseInt(searchsqft);
+
+      console.log("advsearching", advsearching);
+      console.log("searchsqft", searchsqft);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regex, $options: "si" } },
+              { sqft: sqft1 },
+              { Beds: { $regex: regex, $options: "si" } },
+              { Baths: { $regex: regex, $options: "si" } },
+              { tags: { $regex: regex, $options: "si" } },
+            ],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length === 0 &&
+      searchsqft.length > 0 &&
+      searchlocation.length > 0
+    ) {
+      const regex = new RegExp(searchsqft);
+      const sqft1 = parseInt(searchsqft);
+
+      const regex2 = new RegExp(searchlocation);
+
+      console.log("searchsqft", searchsqft);
+      console.log("searchlocation", searchlocation);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $and: [
+              { address: { $regex: regex2, $options: "si" } },
+              { sqft: sqft1 },
+            ],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length > 0 &&
+      searchsqft.length === 0 &&
+      searchlocation.length > 0
+    ) {
+      const regex = new RegExp(advsearching);
+      console.log("advsearching", advsearching);
+      const regex2 = new RegExp(searchlocation);
+      console.log("searchlocation", searchlocation);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regex, $options: "si" } },
+              { address: { $regex: regex2, $options: "si" } },
+              { Beds: { $regex: regex, $options: "si" } },
+              { Baths: { $regex: regex, $options: "si" } },
+              { tags: { $regex: regex, $options: "si" } },
+            ],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else if (
+      advsearching.length > 0 &&
+      searchsqft.length > 0 &&
+      searchlocation.length > 0
+    ) {
+      const regex = new RegExp(advsearching);
+      const regex2 = new RegExp(searchsqft);
+      const sqft1 = parseInt(searchsqft);
+
+      const regex3 = new RegExp(searchlocation);
+
+      console.log("advsearching", advsearching);
+      console.log("searchsqft", searchsqft);
+      console.log("searchlocation", searchlocation);
+
+      const rootUser = await PropertySchema.aggregate([
+        {
+          $match: {
+            $and: [
+              { address: { $regex: regex3, $options: "si" } },
+              { sqft: sqft1 },
+            ],
+            $or: [
+              { name: { $regex: regex, $options: "si" } },
+              { Beds: { $regex: regex, $options: "si" } },
+              { Baths: { $regex: regex, $options: "si" } },
+              { tags: { $regex: regex, $options: "si" } },
+            ],
+          },
+        },
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    } else {
+      const rootUser = await PropertySchema.aggregate([
+        { $sort: { created_at: -1 } },
+        { $limit: limit },
+      ]);
+      res.status(200).json({ rootUser });
+    }
+  } catch (err) {
+    res.json(err);
+  }
+});
 //post property to the site
 app.post("/postProperty", async (req, res) => {
   const {
