@@ -14,15 +14,24 @@ var BlogsSchema = require("./middleware/Blogs");
 var PropertySchema = require("./middleware/SitesSchema");
 var EnquirySchema = require("./middleware/EnquirySchema");
 var LoginSchema = require("./middleware/UserSchema");
+var path = require('path')
+
 require("./database/conn");
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
-app.get("/", (req, res) => {
+app.use(express.static(path.join(__dirname + '/build')))
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, '/build', '/index.html'))
+  // res.send("sad")
+  // res.sendFile(path.join(__dirname + "/Car" + '/index.html'));
+});
+app.get("/api", (req, res) => {
   res.send("hello to devansah");
 });
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -49,7 +58,7 @@ app.post("/login", async (req, res) => {
     res.status(400).json({ error: err });
   }
 });
-app.post("/register", (req, res) => {
+app.post("/api/register", (req, res) => {
   const { name, email, security, password, Cpassword } = req.body;
   console.log(security);
   if (!name || !email || !security || !password || !Cpassword) {
@@ -83,7 +92,7 @@ app.post("/register", (req, res) => {
     });
   }
 });
-app.get("/adminMessage", async (req, res) => {
+app.get("/api/adminMessage", async (req, res) => {
   try {
     const rootUser = await ContactSchema.find().sort({ created_at: -1 });
     res.status(200).json({ rootUser });
@@ -91,7 +100,7 @@ app.get("/adminMessage", async (req, res) => {
     console.log(err);
   }
 });
-app.get("/GetPropertyAdmin", async (req, res) => {
+app.get("/api/GetPropertyAdmin", async (req, res) => {
   try {
     const rootUser = await PropertySchema.find().sort({ created_at: -1 });
 
@@ -100,7 +109,7 @@ app.get("/GetPropertyAdmin", async (req, res) => {
     console.log(err);
   }
 });
-app.get("/GetEnquiry", async (req, res) => {
+app.get("/api/GetEnquiry", async (req, res) => {
   try {
     const rootUser = await EnquirySchema.find().sort({ created_at: -1 });
     res.status(200).json({ rootUser });
@@ -108,7 +117,7 @@ app.get("/GetEnquiry", async (req, res) => {
     console.log(err);
   }
 });
-app.get("/AdminBlogs", async (req, res) => {
+app.get("/api/AdminBlogs", async (req, res) => {
   try {
     const rootUser = await BlogsSchema.aggregate([
       { $sort: { created_at: -1 } },
@@ -120,7 +129,7 @@ app.get("/AdminBlogs", async (req, res) => {
     console.log(err);
   }
 });
-app.post("/adminMessageSingle", async (req, res) => {
+app.post("/api/adminMessageSingle", async (req, res) => {
   const _id = req.body.id;
   try {
     const rootUser = await ContactSchema.find({ _id });
@@ -129,7 +138,7 @@ app.post("/adminMessageSingle", async (req, res) => {
     console.log(err);
   }
 });
-app.post("/AdminCheck", async (req, res) => {
+app.post("/api/AdminCheck", async (req, res) => {
   try {
     const token = req.body.Token;
     console.log(token);
@@ -150,7 +159,7 @@ app.post("/AdminCheck", async (req, res) => {
   }
 });
 //delete blog api
-app.post("/DeleteBlog", async (req, res) => {
+app.post("/api/DeleteBlog", async (req, res) => {
   try {
     const data = await BlogsSchema.findByIdAndDelete(req.body.id);
     res.status(200).json(data);
@@ -160,7 +169,7 @@ app.post("/DeleteBlog", async (req, res) => {
 });
 
 //delete property
-app.post("/DeleteProperty", async (req, res) => {
+app.post("/api/DeleteProperty", async (req, res) => {
   try {
     const data = await PropertySchema.findByIdAndDelete(req.body.id);
     res.status(200).json(data);
@@ -169,7 +178,7 @@ app.post("/DeleteProperty", async (req, res) => {
   }
 });
 
-app.post("/adminPropertiesSingle", async (req, res) => {
+app.post("/api/adminPropertiesSingle", async (req, res) => {
   const _id = req.body.id;
   try {
     const rootUser = await PropertySchema.find({ _id });
@@ -178,7 +187,7 @@ app.post("/adminPropertiesSingle", async (req, res) => {
     console.log(err);
   }
 });
-app.post("/adminBlogsingle", async (req, res) => {
+app.post("/api/adminBlogsingle", async (req, res) => {
   const _id = req.body.id;
   try {
     const rootUser = await BlogsSchema.find({ _id });
@@ -188,12 +197,12 @@ app.post("/adminBlogsingle", async (req, res) => {
   }
 });
 //logout api
-app.get("/logout", authenticate, (req, res) => {
+app.get("/api/logout", authenticate, (req, res) => {
   // console.log(req.cookies.jwtverify);
-  res.clearCookie("jwtverify", { path: "/" });
+  res.clearCookie("jwtverify", { path: "/api/" });
   res.status(200).send("userlogout");
 });
-app.post("/GetProperty", async (req, res) => {
+app.post("/api/GetProperty", async (req, res) => {
   const { searching, limit } = req.body;
 
   try {
@@ -230,7 +239,7 @@ app.post("/GetProperty", async (req, res) => {
     res.json(err);
   }
 });
-app.post("/advGetProperty", async (req, res) => {
+app.post("/api/advGetProperty", async (req, res) => {
   const { advsearching, searchsqft, searchlocation, limit } = req.body;
   try {
     if (
@@ -420,7 +429,7 @@ app.post("/advGetProperty", async (req, res) => {
   }
 });
 //post property to the site
-app.post("/postProperty", async (req, res) => {
+app.post("/api/postProperty", async (req, res) => {
   const {
     name,
     price,
@@ -463,7 +472,7 @@ app.post("/postProperty", async (req, res) => {
 });
 // Admin panel blogs
 // get request blogs
-app.get("/Blogspage", async (req, res) => {
+app.get("/api/Blogspage", async (req, res) => {
   try {
     const rootUser = await BlogsSchema.aggregate([
       { $sort: { created_at: -1 } },
@@ -476,7 +485,7 @@ app.get("/Blogspage", async (req, res) => {
     console.log(err);
   }
 });
-app.post("/PropertiesSingle", async (req, res) => {
+app.post("/api/PropertiesSingle", async (req, res) => {
   const _id = req.body.id;
   try {
     const rootUser = await PropertySchema.find({ _id });
@@ -487,7 +496,7 @@ app.post("/PropertiesSingle", async (req, res) => {
 });
 //Admin panel blogs
 // post request blogs
-app.post("/adminBlogs", async (req, res) => {
+app.post("/api/adminBlogs", async (req, res) => {
   const { name, images, description } = req.body;
 
   try {
@@ -510,7 +519,7 @@ app.post("/adminBlogs", async (req, res) => {
   }
 });
 //main blog api
-app.post("/allblogs", async (req, res) => {
+app.post("/api/allblogs", async (req, res) => {
   const { searching, limit } = req.body;
 
   try {
@@ -541,7 +550,7 @@ app.post("/allblogs", async (req, res) => {
   }
 });
 
-app.get("/GetEnquiry", async (req, res) => {
+app.get("/api/GetEnquiry", async (req, res) => {
   try {
     const rootUser = await EnquirySchema.find().sort({ created_at: -1 });
     res.status(200).json({ rootUser });
@@ -550,7 +559,7 @@ app.get("/GetEnquiry", async (req, res) => {
   }
 });
 //post enquiry
-app.post("/PostEnquiry", async (req, res) => {
+app.post("/api/PostEnquiry", async (req, res) => {
   try {
     const { name, email, number } = req.body;
     console.log(req.body);
@@ -574,7 +583,7 @@ app.post("/PostEnquiry", async (req, res) => {
   }
 });
 
-app.post("/contact", async (req, res) => {
+app.post("/api/contact", async (req, res) => {
   try {
     const { name, email, phone, message } = req.body;
     console.log(req.body);
